@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
@@ -11,7 +12,68 @@ namespace BerlinClockLib
 {
     public static class MengelHeur
     {
+        
+        
+        private static string toMengelHeurRec(string input)
+        {
+            return rec(parseInput(input),"");
+        }
+
+        private static List<int> Remove(List<int> input)
+        {
+            input.RemoveAt(0);
+            return input;
+        }
+
+        private static string Format(int value, char firstChar, char alternateChare, char secondChar, int totalLength, int secTotalLength)
+        {
+            const string l = "\r\n";
+            return
+                ("".PadRight(value/5, firstChar).PadRight(totalLength, secondChar)).Replace("".PadRight(3, firstChar),
+                        firstChar.ToString() + firstChar.ToString() + alternateChare.ToString())
+                    .Replace("".PadRight(3, firstChar),
+                        firstChar.ToString() + firstChar.ToString() + alternateChare.ToString())
+                    .Replace("".PadRight(3, firstChar),
+                        firstChar.ToString() + firstChar.ToString() + alternateChare.ToString())
+                    + l +
+                ("".PadRight(value%5, firstChar).PadRight(secTotalLength, secondChar));
+        }
+
+        //private static string FormatMinutes(int value,char firstChar, char alternateChar)
+
+        private static string rec(List<int> input,string res)
+        {
+            const string l = "\r\n";
+            var value = input.First();
+            switch (input.Count()-1)
+            {
+                case 2:
+                {
+                    return rec(Remove(input),
+                        res + Format(value,'R','R','O',4,4));
+                }
+                case 1:
+                {  
+                    return rec(Remove(input),
+                        res + l + Format(value,'Y','R','O',11,4)
+                        );
+
+                }
+                case 0:
+                {
+                    return (input.First() % 2 == 0 ? "Y" : "O") + l + res + l;
+                }
+
+            }
+           return "";
+        }
+
         public static string toMengelHeur(this string input)
+        {
+            return toMengelHeurRec(input);
+        }
+
+        private static string toMengelHeurRegular(string input)
         {
             var parsed = parseInput(input);
             var output = new StringBuilder();
@@ -37,18 +99,18 @@ namespace BerlinClockLib
             return output.ToString();
         }
 
-        private static int[] parseInput(string input)
+        private static List<int> parseInput(string input)
         {
             var parsed = input.Split(':');
             List<int> values = new List<int>();
             foreach (string s in parsed)
                 values.Add(int.Parse(s));
-            return values.ToArray();
+            return values;
         }
     }
 
     [TestFixture]
-    public class Class1
+    public class TestClass
     {
         [TestCase("00:00:00", "Y")]
         [TestCase("00:00:12", "Y")]
