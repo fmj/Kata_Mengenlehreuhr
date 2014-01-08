@@ -25,14 +25,6 @@ namespace BerlinClockLib
             output.AppendLine(("".PadRight(hours % 5, 'R')).PadRight(4, 'O'));
 
             var tmp = ("".PadRight(minutes / 5, 'Y').PadRight(11, 'O'));
-            //var res = "";
-            //for (int i = 0; i < tmp.Length; i++)
-            //    if ((i + 1) % 3 == 0 && tmp[i] == 'Y')
-            //        res += "R";
-            //    else
-            //    {
-            //        res += tmp[i];
-            //    }
 
             while (tmp.Contains("YYY"))
             {
